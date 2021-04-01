@@ -26,6 +26,7 @@ To basecall:
 To train:
 
 `mkdir runs`
+
 `model.py -c rna.config -n NAME -l`
 
 ### Parameters
