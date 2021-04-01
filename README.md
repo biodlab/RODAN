@@ -20,10 +20,13 @@ RNA test data: https://doi.org/10.5281/zenodo.4557004
 * fast-ctc-decode
 
 To basecall:
+
 `basecall.py /path/to/fast5files > outfile.fasta`
 
 To train:
+
 `mkdir runs
+
 model.py -c rna.config -n NAME -l`
 
 ### Parameters
