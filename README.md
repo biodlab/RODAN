@@ -32,4 +32,5 @@ To train:
 ### Parameters
 -l for label smoothing
 
-
+### Test data
+Five samples of human RNA fast5 data is provided in test-data.tgz.
