@@ -137,6 +137,8 @@ def mp_gpu(inqueue, outqueue, config, args):
             out=model.forward(event)
             if shtensor is None:
                 shtensor = torch.empty((out.shape), pin_memory=True, dtype=out.dtype)
+            if out.shape[0] != shtensor.shape[0]:
+                shtensor = torch.empty((out.shape), pin_memory=True, dtype=out.dtype)
             logitspre = shtensor.copy_(out).numpy()
             if args.debug: print("mp_gpu:", logitspre.shape)
             outqueue.put((file, logitspre))
