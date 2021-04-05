@@ -87,8 +87,8 @@ def mp_files(dir, queue, config, args):
             time.sleep(1)
         outfile = os.path.splitext(os.path.basename(file))[0]
         try:
-            #signal = np.array(data.read_fast5(file)).astype(np.float32)
             signal = np.array(fast5_data(file)).astype(np.float32)
+            if args.debug: print("mp_files:", file)
         except:
             continue
         signal_start = 0
@@ -107,6 +107,15 @@ def mp_files(dir, queue, config, args):
                 queue.put((queuechunks[:args.batchsize], chunks[:args.batchsize]))
                 chunks = chunks[args.batchsize:]
                 queuechunks = queuechunks[args.batchsize:]
+    if len(queuechunks) > 0:
+        if args.debug: print("queuechunks:", len(queuechunks), chunks.shape[0])
+        for i in range(0, int(np.ceil(chunks.shape[0]/args.batchsize)), args.batchsize):
+            start = i * args.batchsize
+            end = start + args.batchsize
+            if end > chunks.shape[0]: end = chunks.shape[0]
+            queue.put((queuechunks[start:end], chunks[start:end]))
+            if args.debug: print("put last chunk", chunks[start:end].shape[0])
+
     queue.put(("end", None))
 
 
@@ -129,6 +138,7 @@ def mp_gpu(inqueue, outqueue, config, args):
             if shtensor is None:
                 shtensor = torch.empty((out.shape), pin_memory=True, dtype=out.dtype)
             logitspre = shtensor.copy_(out).numpy()
+            if args.debug: print("mp_gpu:", logitspre.shape)
             outqueue.put((file, logitspre))
             del out
             del logitspre
@@ -136,7 +146,6 @@ def mp_gpu(inqueue, outqueue, config, args):
 def mp_write(queue, config, args):
     files = None
     chunks = None
-    outfile = open("/tmp/temp.fasta", "w")
     totprocessed = 0
     finish = False
     while True:
@@ -218,7 +227,7 @@ def ctcdecoder(logits, label, blank=False, beam_size=5, alphabet="NACGT", pre=No
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Basecall fast5 or hdf5 data files')
+    parser = argparse.ArgumentParser(description='Basecall fast5 files')
     parser.add_argument("fast5dir", default=None, type=str)
     parser.add_argument("-a", "--arch", default=None, type=str, help="architecture settings")
     parser.add_argument("-m", "--model", default="rna.torch", type=str, help="default: rna.torch")
@@ -230,7 +239,6 @@ if __name__ == "__main__":
     parser.add_argument("-D", "--deterministic", default=False, action="store_true", help="use CUDA deterministic setting")
     args = parser.parse_args()
 
-    if args.debug: print("Loading configuration:", args.configfile)
     torchdict = torch.load(args.model, map_location="cpu")
     origconfig = torchdict["config"]
 
