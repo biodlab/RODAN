@@ -33,9 +33,9 @@ def convert_statedict(state_dict):
 def load_model(modelfile, config = None, args = None):
     if config.amp:
         from apex import amp
-        print("Using apex amp")
+        if args.debug: print("Using apex amp")
     if modelfile == None:
-        print("No model file specified!")
+        sys.stderr.write("No model file specified!")
         sys.exit(1)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if args.debug: print("Using device:", device)
@@ -62,7 +62,7 @@ def fast5_data(file):
     f = get_fast5_file(file, "r")
     reads = f.get_read_ids()
     if len(reads) > 1: 
-        print("ERROR: Designed only for single read fast5 files")
+        sys.stderr.write("ERROR: Designed only for single read fast5 files")
         sys.exit(1)
     read = f.get_read(reads[0])
     signal = f.get_raw_data()
@@ -137,7 +137,7 @@ def mp_gpu(inqueue, outqueue, config, args):
             out=model.forward(event)
             if shtensor is None:
                 shtensor = torch.empty((out.shape), pin_memory=True, dtype=out.dtype)
-            if out.shape[0] != shtensor.shape[0]:
+            if out.shape[1] != shtensor.shape[1]:
                 shtensor = torch.empty((out.shape), pin_memory=True, dtype=out.dtype)
             logitspre = shtensor.copy_(out).numpy()
             if args.debug: print("mp_gpu:", logitspre.shape)
@@ -177,7 +177,7 @@ def mp_write(queue, config, args):
                     pass
                 seq = ""
                 if len(out) != len(outstr):
-                    print("FAIL:", len(out), len(outstr), files[0])
+                    sys.stderr.write("FAIL:", len(out), len(outstr), files[0])
                     sys.exit(1)
                 for j in range(len(out)):
                     seq += outstr[j]
@@ -215,7 +215,7 @@ def ctcdecoder(logits, label, blank=False, beam_size=5, alphabet="NACGT", pre=No
                             pos+=1
                             cur.append(vocab[prev])
                     except:
-                        print("ctcdecoder: fail on i:", i, "pos:", pos)
+                        sys.stderr.write("ctcdecoder: fail on i:", i, "pos:", pos)
             else:
                 if logits[i,j] == 0: break
                 ret[i, pos] = logits[i,j] # is this right?
@@ -238,7 +238,6 @@ if __name__ == "__main__":
     parser.add_argument("-B", "--beamsize", default=5, type=int, help="CTC beam search size (default: 5)")
     parser.add_argument("-e", "--errors", default=False, action="store_true")
     parser.add_argument("-d", "--debug", default=False, action="store_true")
-    parser.add_argument("-D", "--deterministic", default=False, action="store_true", help="use CUDA deterministic setting")
     args = parser.parse_args()
 
     torchdict = torch.load(args.model, map_location="cpu")
@@ -257,10 +256,8 @@ if __name__ == "__main__":
 
     if args.debug: print("Using sequence len:", int(config.seqlen))
     
-    if args.deterministic:
-        print("Setting deterministic")
-        torch.backends.cudnn.enabled = True
-        torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.enabled = True
+    torch.backends.cudnn.deterministic = True
 
     call_queue = Queue()
     write_queue = Queue()
