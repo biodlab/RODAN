@@ -21,8 +21,8 @@ RNA test data: https://doi.org/10.5281/zenodo.4557004
 ## Installation
 
 Create a python virtual environment. 
-`git clone https://github.com/biodlab/RODAN.git
-cd RODAN
+`git clone https://github.com/biodlab/RODAN.git\
+cd RODAN\
 pip install -r requirements.txt`
 
 ## Basecalling
@@ -33,7 +33,7 @@ To basecall (must be run from root directory):
 
 Basecall will recursively search in the specified directory for all fast5 files which must be single reads. If you do not have single file reads:
 
-`pip install ont-fast5-api
+`pip install ont-fast5-api\
 multi_to_single -i INPUTDIR -s OUTPUTDIR`
 
 ## Training
