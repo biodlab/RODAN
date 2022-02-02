@@ -20,7 +20,7 @@ RNA test data: https://doi.org/10.5281/zenodo.4557004
 * fast-ctc-decode
 * pytorch_ranger (only for training)
 
-To basecall:
+To basecall (must be run from root directory):
 
 `basecall.py /path/to/fast5files > outfile.fasta`
 
