@@ -64,4 +64,4 @@ Five samples of human RNA fast5 data is provided in test-data.tgz.
 If you run out of memory, reduce the batch size with the basecaller with "-b 100" or lower. The default is 200.
 
 ### License
-MIT Liecense.
+MIT License.
