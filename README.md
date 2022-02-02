@@ -24,14 +24,16 @@ To basecall (must be run from root directory):
 
 `basecall.py /path/to/fast5files > outfile.fasta`
 
-To train:
+To train, download the RNA training data from the above link.
 
 `mkdir runs`
 
 `model.py -c rna.config -n NAME -l`
 
 ### Parameters
+-c for configuration file
 -l for label smoothing
+-n the name for the run, the model weights, configuration, and results will be saved in the runs directory
 
 ### Test data
 Five samples of human RNA fast5 data is provided in test-data.tgz.
