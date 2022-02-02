@@ -21,9 +21,10 @@ RNA test data: https://doi.org/10.5281/zenodo.4557004
 ## Installation
 
 Create a python virtual environment. 
-`git clone https://github.com/biodlab/RODAN.git\
-cd RODAN\
-pip install -r requirements.txt`
+```git clone https://github.com/biodlab/RODAN.git
+cd RODAN
+pip install -r requirements.txt
+```
 
 ## Basecalling
 
