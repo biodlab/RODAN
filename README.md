@@ -11,12 +11,13 @@ RNA test data: https://doi.org/10.5281/zenodo.4557004
 
 ## Requirements
 * Python 3
-* torch >= 1.2 <= 1.5.1
+* torch >= 1.4.0 <= 1.8.0
 * numpy
 * h5py
 * ont-fast5-api
 * fast-ctc-decode
 * pytorch-ranger (only for training)
+* pyyaml
 
 ## Installation
 
@@ -53,7 +54,8 @@ pip install pytorch-ranger
 ### Parameters
 -c for configuration file\
 -l for label smoothing\
--n the name for the run, the model weights, configuration, and results will be saved in the runs directory
+-n the name for the run, the model weights, configuration, and results will be saved in the runs directory\
+-v verbose
 
 ### Test data
 Five samples of human RNA fast5 data is provided in test-data.tgz.
