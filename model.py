@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # 
 # RODAN
-# (c) 2020,2021 Don Neumann
+# v1.0
+# (c) 2020,2021,2022 Don Neumann
 #
 
 import numpy as np
