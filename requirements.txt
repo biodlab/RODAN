@@ -4,3 +4,5 @@ numpy
 ont-fast5-api
 fast-ctc-decode
 tensorboard <=1.15.0
+pyyaml
+future

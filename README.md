@@ -16,7 +16,7 @@ RNA test data: https://doi.org/10.5281/zenodo.4557004
 * h5py
 * ont-fast5-api
 * fast-ctc-decode
-* pytorch_ranger (only for training)
+* pytorch-ranger (only for training)
 
 ## Installation
 
@@ -35,16 +35,20 @@ To basecall (must be run from root directory):
 
 Basecall will recursively search in the specified directory for all fast5 files which must be single reads. If you do not have single file reads:
 
-`pip install ont-fast5-api\
-multi_to_single -i INPUTDIR -s OUTPUTDIR`
+```
+pip install ont-fast5-api
+multi_to_single -i INPUTDIR -s OUTPUTDIR
+```
 
 ## Training
 
 To train, download the RNA training data from the above link.
 
-`mkdir runs`
-
-`./model.py -c rna.config -n NAME -l`
+```
+mkdir runs
+pip install pytorch-ranger
+./model.py -c rna.config -n NAME -l
+```
 
 ### Parameters
 -c for configuration file\
