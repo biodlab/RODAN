@@ -31,8 +31,8 @@ To train, download the RNA training data from the above link.
 `model.py -c rna.config -n NAME -l`
 
 ### Parameters
--c for configuration file
--l for label smoothing
+-c for configuration file\
+-l for label smoothing\
 -n the name for the run, the model weights, configuration, and results will be saved in the runs directory
 
 ### Test data
