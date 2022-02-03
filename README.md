@@ -14,8 +14,9 @@ RNA test data: https://doi.org/10.5281/zenodo.4557004
 * h5py
 * ont-fast5-api
 * fast-ctc-decode
-* pytorch-ranger (only for training)
 * pyyaml
+* tensorboard
+* pytorch-ranger (only for training)
 
 ## Installation
 
