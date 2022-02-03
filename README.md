@@ -1,8 +1,6 @@
 # RODAN
 A fully convolutional architecture for basecalling nanopore RNA sequencing data
 
-Source code for paper LINK
-
 Generated Taiyaki RNA data: https://doi.org/10.5281/zenodo.4556884
 
 RNA training and validation data: https://doi.org/10.5281/zenodo.4556950
@@ -34,12 +32,7 @@ To basecall (must be run from root directory):
 
 `./basecall.py /path/to/fast5files > outfile.fasta`
 
-Basecall will recursively search in the specified directory for all fast5 files which must be single reads. If you do not have single file reads:
-
-```
-pip install ont-fast5-api
-multi_to_single -i INPUTDIR -s OUTPUTDIR
-```
+Basecall will recursively search in the specified directory for all fast5 files which can be single or multi fast5 files.
 
 ## Training
 
