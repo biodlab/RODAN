@@ -11,6 +11,7 @@ import os, sys, re, argparse, pickle, time, glob
 from torch.utils.data import Dataset, DataLoader
 from fast_ctc_decode import beam_search
 from ont_fast5_api.fast5_interface import get_fast5_file
+import pyslow5
 from torch.multiprocessing import Queue, Process
 
 import model as network
@@ -64,34 +65,64 @@ def mp_files(dir, queue, config, args):
     chunks = None
     queuechunks = None
     chunkremainder = None
-    for file in glob.iglob(dir+"/**/*.fast5", recursive=True):
-        f5 = get_fast5_file(file, mode="r")
-        for read in f5.get_reads():
+    if dir.split(".")[-1] == "blow5":
+        s5 = pyslow5.Open(dir, 'r')
+        # pA=True scales signal on read
+        reads = s5.seq_reads(pA=True)
+        for read in reads:
             while queue.qsize() >= 100:
                 time.sleep(1)
             #outfile = os.path.splitext(os.path.basename(file))[0]
             try:
-                signal = read.get_raw_data(scale=True)
-                if args.debug: print("mp_files:", file)
+                signal = read["signal"]
+                if args.debug: print("mp_files:", read["read_id"])
             except:
                 continue
             signal_start = 0
-            signal_end = len(signal)
+            signal_end = read["len_raw_signal"]
             med, mad = ont.med_mad(signal[signal_start:signal_end])
             signal = (signal[signal_start:signal_end] - med) / mad
             newchunks = segment(signal, config.seqlen)
             if chunks is not None:
                 chunks = np.concatenate((chunks, newchunks), axis=0)
-                queuechunks += [read.read_id] * newchunks.shape[0]
+                queuechunks += [read["read_id"]] * newchunks.shape[0]
             else:
                 chunks = newchunks
-                queuechunks = [read.read_id] * newchunks.shape[0]
+                queuechunks = [read["read_id"]] * newchunks.shape[0]
             if chunks.shape[0] >= args.batchsize:
                 for i in range(0, chunks.shape[0]//args.batchsize, args.batchsize):
                     queue.put((queuechunks[:args.batchsize], chunks[:args.batchsize]))
                     chunks = chunks[args.batchsize:]
                     queuechunks = queuechunks[args.batchsize:]
-        f5.close()
+    else:
+        for file in glob.iglob(dir+"/**/*.fast5", recursive=True):
+            f5 = get_fast5_file(file, mode="r")
+            for read in f5.get_reads():
+                while queue.qsize() >= 100:
+                    time.sleep(1)
+                #outfile = os.path.splitext(os.path.basename(file))[0]
+                try:
+                    signal = read.get_raw_data(scale=True)
+                    if args.debug: print("mp_files:", file)
+                except:
+                    continue
+                signal_start = 0
+                signal_end = len(signal)
+                med, mad = ont.med_mad(signal[signal_start:signal_end])
+                signal = (signal[signal_start:signal_end] - med) / mad
+                newchunks = segment(signal, config.seqlen)
+                if chunks is not None:
+                    chunks = np.concatenate((chunks, newchunks), axis=0)
+                    queuechunks += [read.read_id] * newchunks.shape[0]
+                else:
+                    chunks = newchunks
+                    queuechunks = [read.read_id] * newchunks.shape[0]
+                if chunks.shape[0] >= args.batchsize:
+                    for i in range(0, chunks.shape[0]//args.batchsize, args.batchsize):
+                        queue.put((queuechunks[:args.batchsize], chunks[:args.batchsize]))
+                        chunks = chunks[args.batchsize:]
+                        queuechunks = queuechunks[args.batchsize:]
+            f5.close()
     if len(queuechunks) > 0:
         if args.debug: print("queuechunks:", len(queuechunks), chunks.shape[0])
         for i in range(0, int(np.ceil(chunks.shape[0]/args.batchsize)), args.batchsize):
