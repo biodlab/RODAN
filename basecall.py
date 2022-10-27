@@ -65,8 +65,10 @@ def mp_files(dir, queue, config, args):
     chunks = None
     queuechunks = None
     chunkremainder = None
+    # this is a hack, better to have args modified, but shows proof of concept
     if dir.split(".")[-1] == "blow5":
         s5 = pyslow5.Open(dir, 'r')
+        # this is single threaded. s5.seq_reads_multi() will enable multithreading
         # pA=True scales signal on read
         reads = s5.seq_reads(pA=True)
         for read in reads:
