@@ -1,6 +1,8 @@
 # RODAN
 A fully convolutional architecture for basecalling nanopore RNA sequencing data
 
+Published in [BMC Bioinformatics](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-022-04686-y)
+
 Generated Taiyaki RNA data: https://doi.org/10.5281/zenodo.4556884
 
 RNA training and validation data: https://doi.org/10.5281/zenodo.4556950
